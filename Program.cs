@@ -70,13 +70,19 @@ namespace ProjectShopCars
             }
             else { Console.WriteLine("Гараж полон. {0} не помещается в гараж", car.getNameVehicle()); }
         }
+        
         public void ShowAllCars() // Показать все машины
         {
-            Console.WriteLine("В магазине {0} по адресу {1} в наличии следующие машины:", this.getNameShop(), this.getAddressShop());
-            for (int i = 0; i < garage.Length; i++)
+            if (this.countPlaces > 0)
             {
-                Console.WriteLine(this.garage[i].getNameVehicle());
+                Console.WriteLine("В магазине {0} по адресу {1} в наличии следующие машины:", this.getNameShop(), this.getAddressShop());
+                
+                for (int i = 0; i < this.countPlaces; i++)
+                {
+                    Console.WriteLine(this.garage[i].getNameVehicle());
+                }
             }
+            else { Console.WriteLine("Гараж пуст!"); }
         }
 
         public string getNameShop() // Прочитать Название Магазина
