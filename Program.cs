@@ -56,7 +56,7 @@ namespace ProjectShopCars
             this.addressShop = addressShop;
         }
 
-        private Vehicle[] garage = new Vehicle[3]; // Cars --> garage   Создаём гараж из трёх мест под Средства передвижения
+        private Vehicle[] garage = new Vehicle[3]; // cars --> garage   Создаём гараж из трёх мест под Средства передвижения
         private int countPlaces = 0; // Счётчик мест в гараже. Указатель на пустое место в гараже
 
         public void AddCar(Vehicle car)  // Добавить машину в гараж
