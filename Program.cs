@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleApplication12
+namespace ProjectShopCars
 {
     class ModelCar // класс Модель автомобиля
     {
