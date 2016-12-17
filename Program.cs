@@ -6,9 +6,35 @@ using System.Threading.Tasks;
 
 namespace ProjectShopCars
 {
+    class CarFactory
+    {
+        public Vehicle CreateCar(string type, string name, float volumeEngine, int cost)
+        {
+
+            if (type == ModelCar.TRUCK_CAR || type == ModelCar.PASSENGER_CAR)
+            {
+                ModelCar model = new ModelCar(type, name);
+                Vehicle car1 = new Vehicle(model, volumeEngine, cost);
+
+                return car1;
+            }
+
+            return null;
+        }
+    }
     class ModelCar // класс Модель автомобиля
     {
+        public const string TRUCK_CAR = "Truck";
+        public const string PASSENGER_CAR = "Passenger";
+
         private string name;
+        private string type;
+
+        public ModelCar(string type, string name)
+        {
+            this.type = type;
+            this.name = name;
+        }
 
         public string Name
         {
@@ -18,20 +44,20 @@ namespace ProjectShopCars
     }
     class Vehicle  // класс Средство передвижения
     {
-        private string name;
+        private ModelCar model;
         private float volumeEngine; // Объём двигателя
         private int cost;  // Цена
 
         public Vehicle(ModelCar modelCar, float volumeEngine, int cost)  // Пользовательский конструктор
         {
-            this.name = modelCar.Name;
+            this.model = modelCar;
             this.volumeEngine = volumeEngine;
             this.cost = cost;
         }
 
         public string GetName() //Прочитать Имя средства передвижения
         {
-            return this.name;
+            return this.model.Name;
         }
 
         public float GetVolumeEngine() //Прочитать Объём двигателя
@@ -98,29 +124,18 @@ namespace ProjectShopCars
     {
         static void Main(string[] args)
         {
-            ModelCar modelCar1 = new ModelCar();
+            Shop shop1 = new Shop("Мир Авто", "ул. Советская, д.32");
 
-            modelCar1.Name = "Фольксваген";
-            Vehicle car1 = new Vehicle(modelCar1, 1.4f, 700000);
+            CarFactory carFactory = new CarFactory();
+            Vehicle vehicle1 = carFactory.CreateCar(ModelCar.TRUCK_CAR, "Фольксваген", 1.6f, 130000);
 
-            modelCar1.Name = "Ауди";
-            Vehicle car2 = new Vehicle(modelCar1, 1.6f, 900000);
-
-            modelCar1.Name = "Форд";
-            Vehicle car3 = new Vehicle(modelCar1, 2.3f, 1100000);
-
-            modelCar1.Name = "Мерседес";
-            Vehicle car4 = new Vehicle(modelCar1, 2.8f, 1600000);
-
-
-            Shop Shop1 = new Shop("Мир Авто", "ул. Советская, д.32");
-            Shop1.AddCar(car1);
-            //ShopCars1.AddCar(car2);
-            //ShopCars1.AddCar(car3);
-            //ShopCars1.AddCar(car4);
+            if (vehicle1 is Vehicle)
+            {
+                shop1.AddCar(vehicle1);                
+            }
 
             Console.WriteLine(new string('-', 30));
-            Shop1.ShowAllCars();
+            shop1.ShowAllCars();
         }
     }
 }
