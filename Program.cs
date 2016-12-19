@@ -64,7 +64,7 @@ namespace ProjectShopCars
             return this.model.Name;
         }
 
-        public string GetCategory()
+        public string GetCategory() //Прочитать категорию машины
         {
             return this.model.Category;
         }
