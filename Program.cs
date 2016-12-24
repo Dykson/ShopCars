@@ -1,11 +1,66 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace ProjectShopCars
+namespace ShopCars
 {
+    class Point
+    {
+        int x;
+        int y;
+
+        public Point(int x, int y) 
+        {
+            this.x = x;
+            this.y = y;
+        }
+    }
+
+    interface IVehicleDrive
+    {
+        bool DriveTo(IDirection direction); //Ехать К (Направление)
+    }
+
+    interface IDirection // Направление
+    {
+        Point GetPoint(); // Прочитать Точку
+        string GetName(); // Прочитать Имя
+    }
+
+    class Direction : IDirection
+    {
+        private string name;
+        public string Name
+        {
+            set
+            {
+                this.name = value;
+            }
+            get
+            {
+                return this.name;
+            }
+        }
+
+
+        private Point location = new Point(2, 4);
+
+        public Point GetPoint()
+        {
+            return this.location;
+        }
+
+        public string GetName()
+        {
+            return this.name;
+        }
+
+        public Direction(string name)
+        {
+            this.name = name;
+        }
+
+
+    }
+
     class CarFactory
     {
         public Vehicle CreateCar(string category, string name, float volumeEngine, int cost)
@@ -24,8 +79,8 @@ namespace ProjectShopCars
     }
     class ModelCar // класс Модель автомобиля
     {
-        public const string TRUCK_CAR = "ГРУЗОВОЙ";
-        public const string PASSENGER_CAR = "ЛЕГКОВОЙ";
+        public const string TRUCK_CAR = "грузовой";
+        public const string PASSENGER_CAR = "легковой";
 
         private string name;
         private string category;
@@ -33,7 +88,7 @@ namespace ProjectShopCars
         public ModelCar(string category, string name)
         {
             this.category = category;
-            this.name = name.ToUpper();
+            this.name = name;
         }
 
         public string Name
@@ -46,11 +101,20 @@ namespace ProjectShopCars
             get { return this.category; }
         }
     }
-    class Vehicle  // класс Средство передвижения
+    class Vehicle : IVehicleDrive  // класс Средство передвижения
     {
         private ModelCar model;
         private float volumeEngine; // Объём двигателя
         private int cost;  // Цена
+        private IDirection myPosition;   //Моё положение 
+
+        public bool DriveTo(IDirection direction)
+        {
+            this.myPosition = direction;
+            Console.WriteLine("Приехали в {0}", this.myPosition.GetName());
+
+            return true;
+        }
 
         public Vehicle(ModelCar modelCar, float volumeEngine, int cost)  // Пользовательский конструктор
         {
@@ -80,15 +144,20 @@ namespace ProjectShopCars
         }
     }
 
-    class Shop //Магазин автомобилей
+    class Shop : IDirection //Магазин автомобилей
     {
         private string name;
         private string address;
 
         public Shop(string name, string address)
         {
-            this.name = name.ToUpper();
-            this.address = address.ToUpper();
+            this.name = name;
+            this.address = address;
+        }
+
+        public Point GetPoint()
+        {
+            return null;
         }
 
         private Vehicle[] garage = new Vehicle[3]; // Создаём гараж из трёх мест под Средства передвижения
@@ -110,7 +179,7 @@ namespace ProjectShopCars
             if (this.pointerPlace > 0)
             {
                 Console.WriteLine("В магазине {0} по адресу {1} в наличии следующие машины:\n", this.GetName(), this.GetAddress());
-                
+
                 for (int i = 0; i < this.pointerPlace; i++)
                 {
                     Console.WriteLine(this.garage[i].GetName());
@@ -120,14 +189,18 @@ namespace ProjectShopCars
         }
 
         public void FindCar(string name) // Найти машину по имени
-            //Тест метода.
-            //Возможные состояния: 
-            //1 машина
-            //2 и более машин с одинак. именем
-            //Нет машин с таким именем
-            //Гараж пуст
+        //Тест метода.
+        //Возможные состояния: 
+        //1 машина
+        //2 и более машин с одинак. именем
+        //Нет машин с таким именем
+        //Гараж пуст
         {
-            name = name.ToUpper();
+            //string newName = name.ToLower();
+            //char[] a = newName.ToCharArray();
+            //a[0] = a.
+
+       
             if (this.pointerPlace > 0)
             {
                 bool searchStatus = false;
@@ -169,17 +242,35 @@ namespace ProjectShopCars
             Vehicle vehicle1 = carFactory.CreateCar(ModelCar.TRUCK_CAR, "Фольксваген", 1.6f, 130000);
             Vehicle vehicle2 = carFactory.CreateCar(ModelCar.PASSENGER_CAR, "Форд", 1.8f, 190000);
 
-            if (vehicle1 is Vehicle && vehicle2 is Vehicle)
+            if (vehicle1 is Vehicle)
             {
                 shop1.AddCar(vehicle1);
-                shop1.AddCar(vehicle2);              
+            }
+
+            if (vehicle2 is Vehicle)
+            {
+                shop1.AddCar(vehicle2);
             }
 
             Console.WriteLine(new string('-', 60));
 
             shop1.ShowAllCars();
             Console.WriteLine(new string('-', 60));
-            shop1.FindCar("форд");
+            shop1.FindCar("Форд");
+
+            Console.WriteLine(new string('-', 60));
+
+            Direction direction1 = new Direction("город Тамбов");
+            IDirection direction2 = shop1;
+            Direction direction3 = new Direction("город Москва");
+
+
+            vehicle1.DriveTo(direction1);
+            vehicle1.DriveTo(direction2);
+            vehicle1.DriveTo(direction3);
+
+            direction1.GetPoint();
+
         }
     }
 }
