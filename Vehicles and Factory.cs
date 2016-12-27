@@ -13,7 +13,7 @@ namespace ShopCars
 
     abstract class Vehicle : IVehicleDrivable // класс Средство передвижения
     {
-        public string Name { get; set; }
+        public string Name { get; protected set; }
         protected IDirection myPosition;   //Моё положение 
 
         public bool DriveTo(IDirection direction)
@@ -29,14 +29,20 @@ namespace ShopCars
 
     class Automobile : Vehicle // класс Автомобиль наследуется от Средства передвижения
     {
-        public const string TRUCK_CAR = "грузовой";
-        public const string PASSENGER_CAR = "легковой";
+      //  public const string TRUCK_CAR = "грузовой";
+       // public const string PASSENGER_CAR = "легковой";
 
-        public string Category { get; set; } // Грузовой/легковой
-        public float VolumeEngine { get; set; } // Объём двигателя
-        public int Cost { get; set; }  // Цена
+        public enum CategoryCar : byte
+        {
+        TRUCK_CAR,
+        PASSENGER_CAR
+        }
 
-        public Automobile(string name, string category, float volumeEngine, int cost)
+        public CategoryCar Category { get; private set; } // Грузовой/легковой
+        public float VolumeEngine { get; private set; } // Объём двигателя
+        public int Cost { get; private set; }  // Цена
+
+        public Automobile(string name, CategoryCar category, float volumeEngine, int cost)
         {
             this.Name = name;
             this.Category = category;
@@ -52,8 +58,8 @@ namespace ShopCars
 
     class Bicycle : Vehicle // класс Велосипед наследуется от Средства передвижения
     {
-        public int NumberGears { get; set; }  // Кол-во передач
-        public int Cost { get; set; }  // Цена
+        public int NumberGears { get; private set; }  // Кол-во передач
+        public int Cost { get; private set; }  // Цена
 
         public Bicycle(string name, int numberGears, int cost)
         {
@@ -70,10 +76,10 @@ namespace ShopCars
 
     class VehicleFactory
     {
-        public Vehicle CreateVehicle(string name, string category, float volumeEngine, int cost)
+        public Vehicle CreateAutomobile(string name, Automobile.CategoryCar category, float volumeEngine, int cost)
         {
 
-            if (category == Automobile.TRUCK_CAR || category == Automobile.PASSENGER_CAR)
+            if (category == Automobile.CategoryCar.TRUCK_CAR || category == Automobile.CategoryCar.PASSENGER_CAR)
             {
                 return new Automobile(name, category, volumeEngine, cost);
             }
@@ -82,7 +88,7 @@ namespace ShopCars
 
             return null;
         }
-        public Vehicle CreateVehicle(string name, int numberGears, int cost)
+        public Vehicle CreateBicycle(string name, int numberGears, int cost)
         {
 
             if (numberGears > 0 && numberGears <= 7)

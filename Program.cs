@@ -7,28 +7,18 @@ namespace ShopCars
     {
         static void Main(string[] args)
         {
-            Shop shop1 = new Shop("Мир Авто", "ул. Советская, д.32");
+            Shop shop1 = new Shop("Мир Транспорта", "ул. Советская, д.32");
 
             VehicleFactory factory = new VehicleFactory();
 
-            Vehicle car1 = factory.CreateVehicle("Фольксваген", Automobile.TRUCK_CAR, 1.6f, 130000);
-            Vehicle car2 = factory.CreateVehicle("Форд", Automobile.PASSENGER_CAR, 1.8f, 190000);
-            Vehicle bicycle1 = factory.CreateVehicle("Мерида", 4, 25000);
+            Vehicle car1 = factory.CreateAutomobile("Фольксваген", Automobile.CategoryCar.PASSENGER_CAR, 1.6f, 130000);
+            Vehicle car2 = factory.CreateAutomobile("Форд", Automobile.CategoryCar.TRUCK_CAR, 1.8f, 190000);
+            Vehicle bicycle1 = factory.CreateBicycle("Мерида", 4, 25000);
 
-            if (car1 is Vehicle)
-            {
-                shop1.AddVehicle(car1);
-            }
+            shop1.AddVehicle(car1);
+            shop1.AddVehicle(car2);
+            shop1.AddVehicle(bicycle1);
 
-            if (car2 is Vehicle)
-            {
-                shop1.AddVehicle(car2);
-            }
-
-            if (bicycle1 is Vehicle)
-            {
-                shop1.AddVehicle(bicycle1);
-            }
 
             Console.WriteLine(new string('-', 60));
 
