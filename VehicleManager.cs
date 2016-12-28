@@ -3,32 +3,30 @@ using System.Collections;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace ShopCars
 {
 
     interface ISerializable
     {
-        string Serialize(Automobile car);
+        string Serialize(Vehicle vehicle);
     }
 
     class VehicleManager : ISerializable
     {
-        public string Serialize(Automobile car)
+        public string Serialize(Vehicle vehicle)
         {
-            string state = String.Format("name={0}", car.Name);
+            string state = String.Format("name={0}", vehicle.Name);
             return state;
         }
 
         private string path;
-        public void SaveCar(Automobile car)
+        public void SaveCar(Vehicle vehicle)
         {
-            string tempState = Serialize(car);
-
-            using (System.IO.StreamWriter file = new System.IO.StreamWriter(this.path, true))
-            {
-                file.WriteLine(tempState);
-            }
+            StreamWriter file = new StreamWriter(this.path, true);
+            string tempState = Serialize(vehicle);   
+            file.WriteLine(tempState);    
         }
 
         public void LoadCarByName(string name)

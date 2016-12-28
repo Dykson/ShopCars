@@ -14,6 +14,9 @@ namespace ShopCars
     abstract class Vehicle : IVehicleDrivable // класс Средство передвижения
     {
         public string Name { get; protected set; }
+
+        public int Cost { get; protected set; }  // Цена
+
         protected IDirection myPosition;   //Моё положение 
 
         public bool DriveTo(IDirection direction)
@@ -40,7 +43,6 @@ namespace ShopCars
 
         public CategoryCar Category { get; private set; } // Грузовой/легковой
         public float VolumeEngine { get; private set; } // Объём двигателя
-        public int Cost { get; private set; }  // Цена
 
         public Automobile(string name, CategoryCar category, float volumeEngine, int cost)
         {
@@ -59,7 +61,6 @@ namespace ShopCars
     class Bicycle : Vehicle // класс Велосипед наследуется от Средства передвижения
     {
         public int NumberGears { get; private set; }  // Кол-во передач
-        public int Cost { get; private set; }  // Цена
 
         public Bicycle(string name, int numberGears, int cost)
         {

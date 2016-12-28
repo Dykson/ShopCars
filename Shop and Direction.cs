@@ -18,8 +18,8 @@ namespace ShopCars
     {
         public class GeographicalCoordinates
         {
-            public int Longitude { get; set; } // долгота
-            public int Latitude { get; set; } // широта
+            public int Longitude { get; private set; } // долгота
+            public int Latitude { get; private set; } // широта
 
             public GeographicalCoordinates(int longitude, int latitude)
             {
