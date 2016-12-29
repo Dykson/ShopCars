@@ -16,6 +16,7 @@ namespace ShopCars
 
     class Direction : IDirection
     {
+
         public class GeographicalCoordinates
         {
             public int Longitude { get; private set; } // долгота
@@ -52,14 +53,14 @@ namespace ShopCars
         private int pointerPlace = 0; // Указатель на пустое место в гараже
 
         public void AddVehicle(Vehicle vehicle)  // Добавить средство передвижения в гараж
-        {
+        {            
             if (pointerPlace < garage.Length)
             {
                 this.garage[this.pointerPlace] = vehicle; // В гараж помещаем средство передвижения
                 this.pointerPlace++;
                 Console.WriteLine("Добавлен {0}", vehicle.Name);
             }
-            else { Console.WriteLine("Гараж полон. {0} не помещается в гараж", vehicle.Name); }
+            else { Console.WriteLine("Гараж полон. {0} не помещается в гараж"); }
         }
 
         public void ShowAllVehicles() // Показать все Средства Передвижения

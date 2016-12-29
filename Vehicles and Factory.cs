@@ -3,28 +3,60 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Reflection;
 
 namespace ShopCars
 {
+    interface ISerializable
+    {
+        string Serialize();
+    }
+
     interface IVehicleDrivable
     {
         bool DriveTo(IDirection direction); //Ехать К (Направление)
     }
 
-    abstract class Vehicle : IVehicleDrivable // класс Средство передвижения
+    abstract class Vehicle : IVehicleDrivable, ISerializable // класс Средство передвижения
     {
-        public string Name { get; protected set; }
+        public string Name { get; set; } 
+        public int Cost { get; protected set; }
 
-        public int Cost { get; protected set; }  // Цена
-
-        protected IDirection myPosition;   //Моё положение 
+        public Direction.GeographicalCoordinates myLocation { get; protected set; }
 
         public bool DriveTo(IDirection direction)
         {
-            this.myPosition = direction;
-            Console.WriteLine("Приехали в {0}", this.myPosition.Name);
+            this.myLocation = direction.Location;
+            Console.WriteLine("Приехали в {0}", direction.Name);
 
             return true;
+        }
+
+        public string Serialize()
+        {
+            Type type = this.GetType();
+                        
+            PropertyInfo[] properties = type.GetProperties();
+            FieldInfo[] fields = type.GetFields();
+
+            string shape = "";
+
+            for (int i = 0; i < properties.Length; i++)
+            {
+                shape = shape + String.Format("{0}={1};", properties[i].Name, properties[i].GetValue(this));
+            }
+
+            for (int i = 0; i < fields.Length; i++)
+            {
+                shape = shape + String.Format("{0}={1};", fields[i].Name, fields[i].GetValue(this));
+            }
+
+            return shape;
+        }
+
+        public Vehicle(int longitude, int latitude)
+        {
+            this.myLocation = new Direction.GeographicalCoordinates(longitude, latitude);
         }
 
         public abstract void AllCharacteristics();
@@ -37,14 +69,15 @@ namespace ShopCars
 
         public enum CategoryCar : byte
         {
-        TRUCK_CAR,
-        PASSENGER_CAR
+        TRUCK,
+        PASSENGER
         }
-
+      
         public CategoryCar Category { get; private set; } // Грузовой/легковой
         public float VolumeEngine { get; private set; } // Объём двигателя
 
         public Automobile(string name, CategoryCar category, float volumeEngine, int cost)
+            : base(127, 465)
         {
             this.Name = name;
             this.Category = category;
@@ -63,6 +96,7 @@ namespace ShopCars
         public int NumberGears { get; private set; }  // Кол-во передач
 
         public Bicycle(string name, int numberGears, int cost)
+            : base(127, 465)
         {
             this.Name = name;
             this.NumberGears = numberGears;
@@ -80,7 +114,7 @@ namespace ShopCars
         public Vehicle CreateAutomobile(string name, Automobile.CategoryCar category, float volumeEngine, int cost)
         {
 
-            if (category == Automobile.CategoryCar.TRUCK_CAR || category == Automobile.CategoryCar.PASSENGER_CAR)
+            if (category == Automobile.CategoryCar.TRUCK || category == Automobile.CategoryCar.PASSENGER)
             {
                 return new Automobile(name, category, volumeEngine, cost);
             }

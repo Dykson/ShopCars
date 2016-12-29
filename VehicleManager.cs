@@ -7,26 +7,16 @@ using System.IO;
 
 namespace ShopCars
 {
-
-    interface ISerializable
+    class VehicleManager
     {
-        string Serialize(Vehicle vehicle);
-    }
-
-    class VehicleManager : ISerializable
-    {
-        public string Serialize(Vehicle vehicle)
-        {
-            string state = String.Format("name={0}", vehicle.Name);
-            return state;
-        }
-
         private string path;
         public void SaveCar(Vehicle vehicle)
         {
-            StreamWriter file = new StreamWriter(this.path, true);
-            string tempState = Serialize(vehicle);   
-            file.WriteLine(tempState);    
+            using (StreamWriter file = new StreamWriter(this.path, true))
+            {
+                string tempState = vehicle.Serialize();
+                file.WriteLine(tempState);
+            }
         }
 
         public void LoadCarByName(string name)
@@ -44,13 +34,7 @@ namespace ShopCars
             //    Console.WriteLine(line);
             //}
 
-            Hashtable carState = new Hashtable();
-            carState["name"] = "Форд";
-            carState["volumeEngine"] = 0.5;
-            carState["cost"] = 1000;
-            carState["pos.x"] = 10;
-            carState["pos.y"] = 10;
-            carState["model"] = "грузовой";
+
         }
 
         public VehicleManager(string path)
