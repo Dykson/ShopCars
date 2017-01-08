@@ -1,0 +1,3 @@
+ShopCars.Automobile_-1148639058:CorpsType=лимузин;Cost=190500;MyCoordinate.X=100;MyCoordinate.Y=200;Name=Форд;VolumeEngine=1,8;
+ShopCars.Automobile_1807269438:CorpsType=седан;Cost=140000;MyCoordinate.X=100;MyCoordinate.Y=200;Name=Фольксваген;VolumeEngine=1,6;
+ShopCars.Bicycle_-990493648:Cost=25000;MyCoordinate.X=100;MyCoordinate.Y=200;Name=Мерида;NumberGears=5;
