@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Reflection;
 
 namespace ShopCars
 {
@@ -8,48 +6,36 @@ namespace ShopCars
     {
         static void Main(string[] args)
         {
-            Shop shop1 = new Shop("Мир Транспорта", "ул. Советская, д.32");
+            VehicleFactory factory = new VehicleFactory("Завод транспорта", 30, 100, 200); 
+                // строим фабрику, задаём максимальное число передач для изготовления велосипедов
+                // и положение в пространстве по умолчанию для будущих средств передвижения
+                factory.ShowAllCorpsAuto();
 
-            VehicleFactory factory = new VehicleFactory();
+            Vehicle car1 = factory.CreateAutomobile("Фольксваген", "седан", 1.6f, 140000);
+            Vehicle car2 = factory.CreateAutomobile("Форд", "лимузин", 1.8f, 190500);
+            Vehicle bicycle1 = factory.CreateBicycle("Мерида", 5, 25000); 
 
-            Vehicle car1 = factory.CreateAutomobile("Фольксваген", Automobile.CategoryCar.PASSENGER, 1.6f, 130000); //на выходе объект типа Automobile
-            Vehicle car2 = factory.CreateAutomobile("Форд", Automobile.CategoryCar.TRUCK, 1.8f, 190000);
-            Vehicle bicycle1 = factory.CreateBicycle("Мерида", 4, 25000); //на выходе объект типа BiCycle - апкаст
+            Shop shop1 = new Shop("Магазин Транспорта", "ул. Советская, д.32", 120, 210);
+                if (car1 != null) { shop1.AddVehicle(car1); }
+                if (car2 != null) { shop1.AddVehicle(car2); }
+                if (bicycle1 != null) { shop1.AddVehicle(bicycle1); }
 
-            shop1.AddVehicle(car1);
-            shop1.AddVehicle(car2);
-            shop1.AddVehicle(bicycle1);
-
-
-            Console.WriteLine(new string('-', 60));
-
-            shop1.ShowAllVehicles();
-
-            Console.WriteLine(new string('-', 60));
-
-            shop1.FindVehicle("Форд");
-
-            Console.WriteLine(new string('-', 60));
-
-            Direction directionA = new Direction("город Воронеж", 132, 467);
-            Direction directionB = new Direction("город Москва", 140, 672);
-
-
-            car1.DriveTo(directionA);
-            car1.DriveTo(shop1);
-            car1.DriveTo(directionB);
-
-            Console.WriteLine(new string('-', 60));
+                shop1.ShowAllVehicles();
+                shop1.FindVehicle("Форд");
 
             Vehicle car3 = shop1.ExtractVehicleByName("Форд");
-            car3.AllCharacteristics();
+                if (car3 != null) { car3.PrintAllCharacteristics(); }
 
-            if (car3 is IVehicleDrivable)
-            {
-                VehicleManager vehicleManager = new VehicleManager("C:/test1.txt");
-                vehicleManager.SaveCar(car3);
-                //carManager.LoadCarByName("");
-            }
+            Location locationA = new Location("Воронеж", new Location.Coordinates(132, 467));
+                car1.DriveTo(locationA);
+                car1.DriveTo(shop1);
+                car1.DriveTo(car1);
+                car1.DriveTo(car2);
+                car1.DriveTo(factory);
+
+            VehicleManager vehicleManager = new VehicleManager("serialization.txt");
+                vehicleManager.SaveCar(bicycle1);
+                Vehicle car4 = vehicleManager.LoadCarByName("Форд");
         }
     }
 }

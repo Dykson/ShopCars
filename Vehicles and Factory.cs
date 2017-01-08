@@ -1,93 +1,149 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Reflection;
+using System.Collections;
+using System.Collections.Specialized;
 
 namespace ShopCars
 {
-    interface ISerializable
+    interface ISerializable // возможность сериализовывать, рассказывать своё текущее состояние одной строкой
     {
         string Serialize();
     }
-
-    interface IVehicleDrivable
+    
+    interface IDrivable // возможность двигаться к определённой локации
     {
-        bool DriveTo(IDirection direction); //Ехать К (Направление)
+        void DriveTo(ILocation location);
     }
 
-    abstract class Vehicle : IVehicleDrivable, ISerializable // класс Средство передвижения
+    interface ILocation // Локация - собирательное понятие из точки на карте, имеющую координаты х и у, и названия точки
+    {
+        Location.Coordinates MyCoordinates { get; set; } // Точка на карте
+        string Name { get; set; } // Имя точки
+    }
+
+    class Location : ILocation
+    {
+        public class Coordinates
+        {
+            public int X { get; private set; }
+            public int Y { get; private set; }
+
+            public Coordinates(int x, int y)
+            {
+                this.X = x;
+                this.Y = y;
+            }
+        }
+
+        public Coordinates MyCoordinates { get; set; }
+        public virtual string Name { get; set; }
+
+        public Location()
+        {
+
+        }
+
+        public Location(string name, Coordinates coordinates)
+        {
+            this.Name = name;
+            this.MyCoordinates = new Coordinates(coordinates.X, coordinates.Y);
+        }
+    }
+
+    abstract class Vehicle : IDrivable, ISerializable, ILocation // класс Средство передвижения
     {
         public string Name { get; set; } 
         public int Cost { get; protected set; }
 
-        public Direction.GeographicalCoordinates myLocation { get; protected set; }
+        public Location.Coordinates MyCoordinates { get; set; }
 
-        public bool DriveTo(IDirection direction)
+        public void DriveTo(ILocation location)
         {
-            this.myLocation = direction.Location;
-            Console.WriteLine("Приехали в {0}", direction.Name);
-
-            return true;
-        }
-
-        public string Serialize()
-        {
-            Type type = this.GetType();
-                        
-            PropertyInfo[] properties = type.GetProperties();
-            FieldInfo[] fields = type.GetFields();
-
-            string shape = "";
-
-            for (int i = 0; i < properties.Length; i++)
+            if (this.MyCoordinates == location.MyCoordinates)
             {
-                shape = shape + String.Format("{0}={1};", properties[i].Name, properties[i].GetValue(this));
+                Console.WriteLine("Сами к себе не можем приехать");
             }
-
-            for (int i = 0; i < fields.Length; i++)
+            else
             {
-                shape = shape + String.Format("{0}={1};", fields[i].Name, fields[i].GetValue(this));
+                this.MyCoordinates = location.MyCoordinates;
+                Console.WriteLine("Подъехали к {0}", location.Name);
             }
+        } 
 
-            return shape;
-        }
+        public abstract void PrintAllCharacteristics();
 
-        public Vehicle(int longitude, int latitude)
-        {
-            this.myLocation = new Direction.GeographicalCoordinates(longitude, latitude);
-        }
-
-        public abstract void AllCharacteristics();
+        public abstract string Serialize();
     }
 
     class Automobile : Vehicle // класс Автомобиль наследуется от Средства передвижения
     {
-      //  public const string TRUCK_CAR = "грузовой";
-       // public const string PASSENGER_CAR = "легковой";
-
-        public enum CategoryCar : byte
+        public static class Corpstype //Тип кузова, корпуса
         {
-        TRUCK,
-        PASSENGER
+            private static readonly string[] corpsTypesDefault;
+
+            static Corpstype()
+            {
+                corpsTypesDefault = System.IO.File.ReadAllLines("corpsTypesDefault.txt");
+            }
+
+            public static bool CheckCorpsTypesUser(string corpsTypeUser)
+            {
+                foreach (string corpsType in corpsTypesDefault)
+                {
+                    int index = corpsType.IndexOf(corpsTypeUser);
+                    if (index != -1)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            public static void ShowAllCorpsAuto()
+            {
+                foreach (string corpsType in corpsTypesDefault)
+                {
+                    Console.WriteLine(corpsType);
+                }
+            }
         }
-      
-        public CategoryCar Category { get; private set; } // Грузовой/легковой
+
+        public string CorpsType { get; private set; } 
         public float VolumeEngine { get; private set; } // Объём двигателя
 
-        public Automobile(string name, CategoryCar category, float volumeEngine, int cost)
-            : base(127, 465)
+        public Automobile(string name, string corpsType, float volumeEngine, int cost, Location.Coordinates myCoordinates)
         {
             this.Name = name;
-            this.Category = category;
+            this.CorpsType = corpsType;
             this.VolumeEngine = volumeEngine;
             this.Cost = cost;
+            this.MyCoordinates = new Location.Coordinates(myCoordinates.X, myCoordinates.Y);
         }
 
-        public override void AllCharacteristics()
+        public override void PrintAllCharacteristics()
         {
-            Console.WriteLine("Характеристики:\nКатегория кузова - {0}\nОбъём двигателя - {1}\nЦена - {2}", this.Category, this.VolumeEngine, this.Cost);
+            Console.WriteLine("Характеристики:\nТип кузова - {0}\nОбъём двигателя - {1}\nЦена - {2}", this.CorpsType, this.VolumeEngine, this.Cost);
+        }
+
+        public override string Serialize()
+        {
+            SortedList members = new SortedList();
+            members["Name"] = this.Name;
+            members["CorpsType"] = this.CorpsType;
+            members["VolumeEngine"] = this.VolumeEngine;
+            members["Cost"] = this.Cost;
+            members["MyCoordinate.X"] = this.MyCoordinates.X;
+            members["MyCoordinate.Y"] = this.MyCoordinates.Y;
+
+            string shape = "";
+            string vehicleId = "";
+
+            for (int i = 0; i < members.Count; i++)
+            {
+                shape += string.Format("{0}={1};", members.GetKey(i), members[members.GetKey(i)]);
+            }
+            vehicleId = this.ToString() + "_" + shape.GetHashCode() + ":";
+
+            return vehicleId + shape;
         }
     }
 
@@ -95,40 +151,82 @@ namespace ShopCars
     {
         public int NumberGears { get; private set; }  // Кол-во передач
 
-        public Bicycle(string name, int numberGears, int cost)
-            : base(127, 465)
+        public Bicycle(string name, int numberGears, int cost, Location.Coordinates myCoordinates)
         {
             this.Name = name;
             this.NumberGears = numberGears;
             this.Cost = cost;
+            this.MyCoordinates = new Location.Coordinates(myCoordinates.X, myCoordinates.Y);
         }
 
-        public override void AllCharacteristics()
+        public override void PrintAllCharacteristics()
         {
             Console.WriteLine("Характеристики:\nКоличество передач - {0}\nЦена - {1}", this.NumberGears, this.Cost);
         }
+
+        public override string Serialize()
+        {
+            SortedList members = new SortedList();
+            members["Name"] = this.Name;
+            members["NumberGears"] = this.NumberGears;
+            members["Cost"] = this.Cost;
+            members["MyCoordinate.X"] = this.MyCoordinates.X;
+            members["MyCoordinate.Y"] = this.MyCoordinates.Y;
+
+            string shape = "";
+            string vehicleId = "";
+
+            for (int i = 0; i < members.Count; i++)
+            {
+                shape += string.Format("{0}={1};", members.GetKey(i), members[members.GetKey(i)]);
+            }
+            vehicleId = this.ToString() + "_" + shape.GetHashCode() + ":";
+
+            return vehicleId + shape;
+        }
     }
 
-    class VehicleFactory
+    class VehicleFactory : Location
     {
-        public Vehicle CreateAutomobile(string name, Automobile.CategoryCar category, float volumeEngine, int cost)
-        {
+        public readonly int maxNumberGears;
 
-            if (category == Automobile.CategoryCar.TRUCK || category == Automobile.CategoryCar.PASSENGER)
+        public VehicleFactory(string name, int x, int y )
+            : base(name, new Coordinates(x, y)) { }
+
+        public VehicleFactory(string name, int maxNumberGears, int x, int y )
+           : base(name, new Coordinates(x, y))
+        {
+            this.maxNumberGears = maxNumberGears;
+        }
+        public void ShowAllCorpsAuto() // Показать все возможные кузова автомобилей
+        {
+            Automobile.Corpstype.ShowAllCorpsAuto();
+        }
+
+        public Vehicle CreateAutomobile(string name, string corpsType, float volumeEngine, int cost)
+        {
+            if (corpsType == "")
             {
-                return new Automobile(name, category, volumeEngine, cost);
+                Console.WriteLine("Автомобиль без кузова фабрика не будет изготавливать.");
+                return null;
             }
 
-            Console.WriteLine("Данной категории автомобиля не существует.");
+            if (Automobile.Corpstype.CheckCorpsTypesUser(corpsType))
+            {
+                Console.WriteLine("{0} успешно изготовлен", name);
+                return new Automobile(name, corpsType, volumeEngine, cost, this.MyCoordinates);
+            }
+            Console.WriteLine("Автомобиль с данным типом кузова фабрика не может изготовить.");
 
             return null;
         }
         public Vehicle CreateBicycle(string name, int numberGears, int cost)
         {
 
-            if (numberGears > 0 && numberGears <= 7)
+            if (numberGears > 0 && numberGears <= this.maxNumberGears)
             {
-                return new Bicycle(name, numberGears, cost);
+                Console.WriteLine("{0} успешно изготовлен", name);
+                return new Bicycle(name, numberGears, cost, this.MyCoordinates);
             }
 
             Console.WriteLine("С таким количеством передач не смогу собрать велосипед");
