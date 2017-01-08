@@ -6,11 +6,9 @@ namespace ShopCars
 {
     class VehicleManager
     {
-        
         private string path;
         public void SaveCar(Vehicle vehicle)   //
         {
-            
                 string tempState = vehicle.Serialize();
 
                 if (System.IO.File.ReadAllText(path).IndexOf(tempState) == -1)
@@ -34,20 +32,17 @@ namespace ShopCars
 
                 if (index != -1)
                 {
+                    char[] separator = { ':', '=', ';' };
+                    string[] substring = line.Split(separator);
+
                     if (line.StartsWith("ShopCars.Automobile"))
                     {
-                        char[] separator = {':', '=', ';'};
-                        string[] substring = line.Split(separator);
                         return new VehicleFactory(name, Convert.ToInt32(substring[6]), Convert.ToInt32(substring[8])).CreateAutomobile(name, substring[2], Convert.ToSingle(substring[12]), Convert.ToInt32(substring[4]));
                     }
                     if (line.StartsWith("ShopCars.Bicycle"))
                     {
-                        char[] separator = { ':', '=', ';' };
-                        string[] substring = line.Split(separator);
                         return new VehicleFactory(name, Convert.ToInt32(substring[10]), Convert.ToInt32(substring[4]), Convert.ToInt32(substring[6])).CreateBicycle(name, Convert.ToInt32(substring[10]), Convert.ToInt32(substring[2]));
                     }
-
-                    return null;
                 }
             }
             Console.WriteLine("Средства передвижения с данным именем не существует.");
