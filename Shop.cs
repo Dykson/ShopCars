@@ -5,14 +5,15 @@ namespace ShopCars
     class Shop : Location //Магазин автомобилей
     {
         public string Address { get; set; }
+        private Vehicle[] garage;
 
-        public Shop(string name, string address, int x, int y) // Магазин в Тамбове
+        public Shop(string name, string address, int places, int x, int y)
             : base(name, new Coordinates(x, y))
         {
             this.Address = address;
+            garage = new Vehicle[places]; 
         }
-
-        private Vehicle[] garage = new Vehicle[3]; // Создаём гараж из трёх мест под средства передвижения
+        
         private int pointerPlace = 0; // Указатель на пустое место в гараже
 
         public void AddVehicle(Vehicle vehicle)  // Добавить средство передвижения в гараж

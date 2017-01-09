@@ -15,7 +15,7 @@ namespace ShopCars
             Vehicle car2 = factory.CreateAutomobile("Форд", "лимузин", 1.8f, 190500);
             Vehicle bicycle1 = factory.CreateBicycle("Мерида", 5, 25000); 
 
-            Shop shop1 = new Shop("Магазин Транспорта", "ул. Советская, д.32", 120, 210);
+            Shop shop1 = new Shop("Магазин Транспорта", "ул. Советская, д.32", 5, 120, 210);
                 if (car1 != null) { shop1.AddVehicle(car1); }
                 if (car2 != null) { shop1.AddVehicle(car2); }
                 if (bicycle1 != null) { shop1.AddVehicle(bicycle1); }
